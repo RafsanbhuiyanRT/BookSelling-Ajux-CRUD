@@ -1,0 +1,133 @@
+﻿<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="card-title">Employ List</h4>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button id="add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#employModal">
+                            Add Employ
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">Employ ID</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Blood Group</th>
+                                <th class="text-center">Department</th>
+                                <th class="text-center">Manager</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="employModal" tabindex="-1" aria-labelledby="labelTitle" aria-hidden="true">
+    @* id = studentModel *@
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="labelTitle">Add Product</h5>                                         @*  id="labelTitle" *@
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="studentFrom">
+                    @* id="studentForm" *@
+                    <div class="row">
+                        <input type="hidden" id="id" />
+                        <div class="col-12">
+                            <label for="name"> Name : </label>
+                            <input type="text" name="name" id="name" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="employId">Employ Id : </label>
+                            <input type="number" name="employId" id="employId" required />
+                        </div>
+ 
+                        <div class="col-12 mt-1">
+                            <label for="email">Email   :</label>
+                            <input type="email" name="email" id="email" required />
+                        </div>
+
+                        <div class="col-12 mt-1">
+                            <label for="bloodGroup"> Blood Group : </label>
+                            <select name="bloodGroup" id="bloodGroup" @* class="form-select"  *@required>
+                                <option value="">Select Blood Group</option> 
+                                <option value="A_Positive">A+</option>
+                                <option value="A_Negative">A-</option>
+
+                                <option value="B_Positive">B+</option>
+                                <option value="B_Negative">B-</option>
+                               
+                                <option value="AB_Positive">AB+</option>
+                                <option value="AB_Negative">AB-</option>
+
+                                <option value="O_Positive">O+</option>
+                                <option value="O_Negative">O-</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-1">
+                            <label for="department">Department : </label>
+                            <select name="department" id="department" @* class="form-select" *@ required>
+                                <option value="">Select Department</option>
+                                <option value="1">Department 1</option>
+                                <option value="2">Department 2</option>
+                                <!-- Add more options for other departments -->
+                            </select>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <label for="isManager"></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isManager" name="isManager">
+                                <label class="form-check-label" for="isManager">Yes, this employee is a manager</label>
+                            </div>
+                        </div>                    
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>   @* id="btnSave" *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        function getDepartment(){
+            $.ajax({
+                url: "/Department/GetDropDepartment",
+                type: 'get',
+                success: function (data) {
+                    let option = '';
+                    $.each(data, function (key, val) {
+                        option += `<option value="${val.value}"> ${vel.text} </option>`;
+                    });
+                    $('#department').empty();
+                    $('#department').append(option)
+                },
+            });
+        }
+        $(document).ready(function () {
+            getDepartment();
+        });
+    </script>
+}

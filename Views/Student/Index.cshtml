@@ -1,0 +1,230 @@
+﻿<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="card-title">Student List</h4>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button id="add" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#studentModel">
+                            Add Student @*  id="add" *@ 
+                        </button> 
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="table"> @* id="table" *@
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">Student ID</th>
+                                <th class="text-center">Department</th>
+                                <th class="text-center">City</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Action</th>
+                               
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="studentModel" tabindex="-1" aria-labelledby="labelTitle" aria-hidden="true">        @* id = studentModel *@
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="labelTitle">Add Product</h5>                                         @*  id="labelTitle" *@
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="studentFrom">                                                                          @* id="studentForm" *@
+                    <div class="row">
+                        <input type="hidden" id="id" />
+                        <div class="col-12">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" id="name" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="studentId">Student Id</label>
+                            <input type="number" name="studentId" id="studentId" required />
+                        </div>
+                        <div class="col-12 mt-1">
+                            <label for="department">Department</label>
+                            <input type="text" name="department" id="department" required />
+                        </div>
+                        <div class="col-12 mt-1">
+                            <label for="city">City</label>
+                            <input type="text" name="city" id="city" required/>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" required />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>   @* id="btnSave" *@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="labelTitle" aria-hidden="true">
+    @* id =deleteModal *@
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="labelTitle">Confirmation</h5>                                 @*  id="labelTitle" *@
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to delete this item</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDelete">Delete</button>   @* id="vbtnDelete" *@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        function getAllStudent(){
+            $.ajax({
+                url: "Student/GetAllStudent",
+                type: "get",
+                success: function (data) {
+                    let tbody = '';
+                    $.each(data, function (key, val) {
+                        tbody += `
+                         <tr>
+                                <th class="text-center">${key + 1}</th>
+                                <th class="text-center">${val.name}</th>
+                                <th class="text-center">${val.studentId}</th>
+                                <th class="text-center">${val.department}</th>
+                                <th class="text-center">${val.city}</th>
+                                <th class="text-center">${val.email}</th>
+                                <td class="d-flex justify-content-center">
+                                        <a class="btn btn-primary btn-sm edit" data-id="${val.id}">Edit</a>
+                                        <a class="btn btn-danger btn-sm delete" data-id="${val.id}">Delete</a>
+                                </td>                             
+                         </tr>`
+                    });
+                    $('#table tbody').empty();
+                    $('#table tbody').append(tbody);
+                },
+            });
+        }
+
+        $(document).on("click", ".edit",function(el){
+            let id = $(this).data('id');
+            $.ajax({
+                url:"/Student/GetStudent?id="+id,
+                type:'get',
+                success: function (data) {                   
+                    $('#btnSave').text("Update");
+                    $('#id').val(data.id);
+                    $('#name').val(data.name);
+                    $('#studentId').val(data.studentId);
+                    $('#department').val(data.department);
+                    $('#city').val(data.city);
+                    $('#email').val(data.email);
+                    $('#studentModel').modal("show");
+                }
+            })
+        })
+        
+
+        // $(document).on("click", "edit", function (el) {
+
+        // });
+
+        $("#btnSave").click(function (el) {
+            el.preventDefault();
+            if (!$('#studentFrom').valid()) {
+                return;
+            }
+          
+            let data = {
+                name: $('#name').val(),
+                studentId: $('#studentId').val(),
+                department: $('#department').val(),
+                city: $('#city').val(),
+                email: $('#email').val()
+            };
+           
+            let url = "Student/Create";
+            if ($(this).text().toLocaleLowerCase == 'update') {
+                data.id = $('#id').val();
+                url: '/Student/Update';
+            }
+
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                success: function (data) {
+                    getAllStudent();
+                    $("#studentModel").modal('hide');
+                    $("#studentFrom").trigger('reset');
+                    $("#btnSave").text('save');
+                },
+                
+                error: function (a, b, c) {
+
+                },
+            });
+            
+        });
+
+        $(document).on("click", ".delete", function (el) {
+            let id = $(this).data('id'),
+            name = $($(this).parent().siblings()[1]).text()
+
+            $.confirm({
+                title: 'Confiramition',
+                content:`
+                       <p> Do you want to delete <b>${name}</b> </p> 
+                `,
+                buttons:{
+                    delete:{
+                        text:'delete',
+                        btnClass:'btn-denger',
+                        action: function(){
+                            $.ajax({
+                                url: `/Student/Delete?id=${id}`,
+                                type: delete,
+                                success: function (data) {
+                                    $.alert('Delete Successfull');
+                                    getAllStudent();
+                                },
+                            });
+                        }
+                    },
+                    cancel: function () {
+                        
+                    }
+                }
+            })
+        });
+
+        $(document).ready(function () {
+            getAllStudent();           
+        });
+    </script>
+}

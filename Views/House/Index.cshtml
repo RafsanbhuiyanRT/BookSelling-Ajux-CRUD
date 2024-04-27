@@ -1,0 +1,143 @@
+﻿
+<style>
+
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="card-title">House List</h4>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                            Add House
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">d
+                    <table class="table table-bordered" id="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Serial Number</th>
+                                <th> House Number</th>
+                                <th>Name</th>
+                                <th>City</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>01</td>
+                                <th>4056</th>
+                                <td>My House</td>
+                                <td>Comilla</td>
+                                <td class="d-flex justify-content-center">
+                                    <a class="btn btn-primary btn-sm">Edit</a>
+                                    <a class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="labelTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="labelTitle">Create New House</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productFrom">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="houseNumber">House Number</label>
+                            <input type="text" name="houseNumber" id="houseNumber" placeholder="Enter house number" required/>
+                        </div>
+                        <div class="col-12">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" id="name" placeholder="Enter house name" required />
+                        </div>
+                       
+                        <div class="col-12 mt-1">
+                            <label for="city">City</label>
+                            <input type="text" name="city" id="city" placeholder="Enter city" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function houseDetails() {
+            $.ajax({
+                url: "/House/HouseDetail",
+                type: 'get',
+                success: function (data) {
+                    let tbody = '';
+                    $.each(data, function (key, val) {
+                        tbody += `<tr>
+                                        <td>${key + 1}</td>
+                                        <th>${val.houseNumber}</th>
+                                        <td>${val.name}</td>
+                                        <td>${val.city} </td>
+                                        <td class="d-flex justify-content-center">
+                                            <a class="btn btn-primary btn-sm" data-id="${val.id}">Edit</a>
+                                            <a class="btn btn-danger btn-sm" data-id="${val.id}">Delete</a>
+                                        </td>
+                                    </tr>`;
+                    });
+                    $('#table tbody').empty();
+                    $('#table tbody').append(tbody)
+                },
+
+            });
+        }
+        $(document).on("click", ".edit", function (el) { })
+        $("#btnSave").click(function (el) {
+            el.preventDefault();
+            if (!$('#productFrom').valid()) {
+                return;
+            }
+            let name = $('#name').val(),
+                houseNumber = $('#houseNumber').val(),
+                city = $('#city').val();
+            $.ajax({
+                url: "/House/Create",   
+                type: 'post',
+                data: {
+                    name: name,
+                    houseNumber: houseNumber,
+                    city: city
+                },
+                success: function (data) {
+                    houseDetails();
+                    $('#productModal').modal('hide');
+                    $('#productFrom').trigger('reset');
+                },
+                error: function (xa, b, c) {
+                    1
+                }
+            });
+        });
+        $(document).ready(function () {
+            houseDetails();
+        });
+    </script>
+}
